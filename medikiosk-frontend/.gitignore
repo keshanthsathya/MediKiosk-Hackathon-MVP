@@ -30,4 +30,3 @@ pnpm-debug.log*
 # Misc
 *.tgz
 .cache/
-.npm-cache*/

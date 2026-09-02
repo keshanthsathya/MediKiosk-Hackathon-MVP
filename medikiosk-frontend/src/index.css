@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0F4C75;
+  --color-primary-light: #1B6FA0;
+  --color-primary-dark: #0A3A5C;
+  --color-sos: #E63946;
+  --color-sos-dark: #C62D39;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F4F6F8;
+  --color-text: #1A1A2E;
+  --color-text-light: #4A4A6A;
+  --color-text-muted: #8888A0;
+  --color-border: #E0E4E8;
+  --color-success: #2ECC71;
+  --color-warning: #F39C12;
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* Global resets */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Kiosk: disable text selection & context menu for touch devices */
+* {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+input, textarea {
+  user-select: text;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-sos {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.08); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-pulse-sos {
+  animation: pulse-sos 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out both;
+}
