@@ -11,6 +11,7 @@ create table if not exists intake_submissions (
   language text not null default 'en',
   identifier text,
   history jsonb not null,
+  doctor_summary jsonb not null default '{}'::jsonb,
   document_count integer not null default 0,
   priority boolean not null default false,
   created_at timestamptz not null default now()

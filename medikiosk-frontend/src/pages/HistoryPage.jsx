@@ -50,7 +50,8 @@ export default function HistoryPage() {
       const base = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
       const response = await fetch(`${base}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message, turn: chatMessages.filter(m => m.role === 'assistant').length }) });
       const data = await response.json();
-      setChatMessages([...nextMessages, { role: 'assistant', text: data.reply }]);
+      setChatMessages([...nextMessages, { role: 'assistant', text: data.reply, provider: data.provider }]);
+      updateHistory({ aiSummary: { lastQuestion: data.reply, provider: data.provider } });
       if (data.emergency) updateHistory({ priority: true });
     } catch {
       setChatMessages([...nextMessages, { role: 'assistant', text: 'Please continue with the guided questions below. A staff member can assist if needed.' }]);

@@ -16,9 +16,10 @@ const TopBar = () => {
   const { language } = state;
 
   return (
-    <header className="h-[60px] bg-[#0F4C75] text-white flex items-center justify-between px-6 shadow-md shrink-0 w-full font-inter">
+    <header className="h-[72px] bg-gradient-to-r from-[#082f49] via-[#0F4C75] to-[#17648f] text-white flex items-center justify-between px-7 shadow-lg shrink-0 w-full font-inter relative overflow-hidden">
+      <div className="absolute -right-8 -top-16 w-44 h-44 rounded-full bg-white/10 animate-ambient" />
       <div className="flex items-center gap-3 h-full min-h-[60px] min-w-[60px]">
-        <FiActivity size={28} className="text-[#E63946]" />
+        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center"><FiActivity size={25} className="text-[#ff7180]" /></div>
         <h1 className="text-2xl font-bold tracking-wide">MediKiosk</h1>
       </div>
       

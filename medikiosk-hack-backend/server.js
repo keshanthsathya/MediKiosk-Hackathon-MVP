@@ -15,6 +15,25 @@ const supabase = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_K
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
   : null;
 
+const fallbackPrompts = [
+  'Where exactly do you feel this symptom?',
+  'When did it start, and is it getting better or worse?',
+  'How severe is it from 0 to 10?',
+  'What makes it better or worse?',
+  'Have you noticed any other symptoms with it?'
+];
+
+async function askGemini(message, turn) {
+  if (!process.env.GEMINI_API_KEY) return null;
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+  const prompt = `You are MediKiosk, a hospital intake assistant. Ask exactly one short, plain-language follow-up question to collect only information useful to a doctor. Do not diagnose, prescribe, or give treatment advice. If the message suggests an emergency, reply exactly with URGENT: followed by a brief instruction to alert hospital staff. This is follow-up ${Number(turn || 0) + 1} of 5. Patient message: ${message}`;
+  const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 80 } }) });
+  if (!response.ok) throw new Error(`Gemini request failed with ${response.status}`);
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+}
+
 // Keep this endpoint independent of external services so it can be used to
 // distinguish a deployment/runtime failure from a Supabase, SMTP, or AI error.
 app.get('/health', (_req, res) => {
@@ -31,6 +50,15 @@ app.get('/api/sos', async (_req, res, next) => {
     const { data, error } = await supabase.from('sos_alerts').select('*').order('created_at', { ascending: false }).limit(50);
     if (error) return next(error);
     res.json({ alerts: data || [] });
+  } catch (error) { next(error); }
+});
+
+app.get('/api/doctor/queue', async (_req, res, next) => {
+  try {
+    if (!supabase) return res.json({ submissions: [] });
+    const { data, error } = await supabase.from('intake_submissions').select('id, token, language, history, doctor_summary, priority, created_at').order('created_at', { ascending: false }).limit(25);
+    if (error) return next(error);
+    res.json({ submissions: data || [] });
   } catch (error) { next(error); }
 });
 
@@ -57,6 +85,13 @@ app.post('/api/intake', async (req, res, next) => {
       language: payload.language || 'en',
       identifier: payload.consent?.idValue || null,
       history: payload.history,
+      doctor_summary: {
+        chief_complaint: payload.history.complaint || null,
+        onset: payload.history.onset || null,
+        symptoms: payload.history.symptoms || [],
+        red_flags: Boolean(payload.priority),
+        ai_assisted: Boolean(payload.history.aiSummary)
+      },
       document_count: Array.isArray(payload.uploads) ? payload.uploads.length : 0,
       priority: Boolean(payload.priority),
       created_at: new Date().toISOString(),
@@ -78,15 +113,15 @@ app.post('/api/chat', async (req, res) => {
   if (redFlags.test(message)) {
     return res.json({ emergency: true, reply: 'This may need urgent attention. Please alert hospital staff immediately.', next: null });
   }
-  const prompts = [
-    'Where exactly do you feel this symptom?',
-    'When did it start, and is it getting better or worse?',
-    'How severe is it from 0 to 10?',
-    'What makes it better or worse?',
-    'Have you noticed any other symptoms with it?'
-  ];
-  const index = Math.min(Number(req.body?.turn || 0), prompts.length - 1);
-  res.json({ emergency: false, reply: prompts[index], next: index + 1 });
+  const index = Math.min(Number(req.body?.turn || 0), fallbackPrompts.length - 1);
+  try {
+    const geminiReply = await askGemini(message, index);
+    const emergency = /^URGENT:/i.test(geminiReply || '');
+    return res.json({ emergency, provider: geminiReply ? 'gemini' : 'fallback', reply: (geminiReply || '').replace(/^URGENT:\s*/i, '') || fallbackPrompts[index], next: emergency ? null : index + 1 });
+  } catch (error) {
+    console.warn('Gemini unavailable; using safe intake fallback.', error.message);
+    return res.json({ emergency: false, provider: 'fallback', reply: fallbackPrompts[index], next: index + 1 });
+  }
 });
 
 app.use((_req, res) => {
