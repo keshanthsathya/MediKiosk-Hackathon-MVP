@@ -7,6 +7,7 @@ import ConsentPage from './pages/ConsentPage';
 import HistoryPage from './pages/HistoryPage';
 import UploadPage from './pages/UploadPage';
 import ConfirmationPage from './pages/ConfirmationPage';
+import DoctorPage from './pages/DoctorPage';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/confirmation" element={<ConfirmationPage />} />
+            <Route path="/doctor" element={<DoctorPage />} />
           </Routes>
         </main>
         <SOSButton />

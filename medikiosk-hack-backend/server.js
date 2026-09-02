@@ -25,6 +25,26 @@ app.get('/', (_req, res) => {
   res.status(200).json({ service: 'medikiosk-backend', status: 'ok' });
 });
 
+app.get('/api/sos', async (_req, res, next) => {
+  try {
+    if (!supabase) return res.json({ alerts: [] });
+    const { data, error } = await supabase.from('sos_alerts').select('*').order('created_at', { ascending: false }).limit(50);
+    if (error) return next(error);
+    res.json({ alerts: data || [] });
+  } catch (error) { next(error); }
+});
+
+app.post('/api/sos', async (req, res, next) => {
+  try {
+    const record = { id: randomUUID(), token: req.body?.token || null, language: req.body?.language || 'en', history: req.body?.history || {}, status: 'open', created_at: new Date().toISOString() };
+    if (supabase) {
+      const { error } = await supabase.from('sos_alerts').insert(record);
+      if (error) return next(error);
+    }
+    res.status(201).json({ ok: true, alert: record, persisted: Boolean(supabase) });
+  } catch (error) { next(error); }
+});
+
 app.post('/api/intake', async (req, res, next) => {
   try {
     const payload = req.body || {};

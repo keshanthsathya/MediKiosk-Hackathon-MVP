@@ -6,7 +6,7 @@ import { FiCpu } from 'react-icons/fi';
 
 export default function ConsentPage() {
   const navigate = useNavigate();
-  const { updateConsent } = useKiosk();
+  const { updateConsent, t } = useKiosk();
   const [idMode, setIdMode] = useState('abha'); // 'abha' or 'aadhaar'
   const [abhaId, setAbhaId] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -45,7 +45,7 @@ export default function ConsentPage() {
       <div className="flex flex-1 gap-12 max-w-6xl mx-auto w-full mt-12">
         {/* Left Section - Patient Identification */}
         <div className="flex-1 bg-white p-8 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
-          <h2 className="text-3xl font-bold mb-8">Patient Identification</h2>
+          <h2 className="text-3xl font-bold mb-8">{t('patientIdentification')}</h2>
           
           <div className="flex bg-gray-100 rounded-xl p-1 mb-10">
             <button 
@@ -97,7 +97,7 @@ export default function ConsentPage() {
 
         {/* Right Section - Consent */}
         <div className="flex-1 bg-white p-8 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
-          <h2 className="text-3xl font-bold mb-8">Patient Consent</h2>
+          <h2 className="text-3xl font-bold mb-8">{t('patientConsent')}</h2>
           
           <div className="flex flex-col gap-8 mb-12 flex-1">
             {[
@@ -128,7 +128,7 @@ export default function ConsentPage() {
               disabled={!canProceed}
               className={`w-full py-6 text-2xl font-bold rounded-xl min-h-[80px] transition-all shadow-md ${canProceed ? 'bg-[#0F4C75] text-white hover:bg-blue-900 active:scale-95' : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'}`}
             >
-              Continue
+              {t('continue')}
             </button>
           </div>
         </div>

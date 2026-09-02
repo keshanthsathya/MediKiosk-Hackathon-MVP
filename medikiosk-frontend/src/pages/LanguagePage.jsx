@@ -13,7 +13,7 @@ const LANGUAGES = [
 
 export default function LanguagePage() {
   const navigate = useNavigate();
-  const { setLanguage } = useKiosk();
+  const { setLanguage, t } = useKiosk();
 
   const handleSelectLanguage = (code) => {
     setLanguage(code);
@@ -28,9 +28,10 @@ export default function LanguagePage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
           </svg>
         </div>
-        <h1 className="text-4xl font-bold mb-4">Welcome to MediKiosk</h1>
-        <p className="text-xl text-gray-600">Please select your preferred language</p>
+        <h1 className="text-4xl font-bold mb-4">{t('welcome')}</h1>
+        <p className="text-xl text-gray-600">{t('selectLanguage')}</p>
       </div>
+      <a href="/doctor" className="mt-10 text-[#0F4C75] underline font-semibold text-lg">{t('viewDoctor')}</a>
 
       <div className="grid grid-cols-3 gap-6 max-w-5xl w-full">
         {LANGUAGES.map((lang, index) => (

@@ -18,6 +18,16 @@ create table if not exists intake_submissions (
 
 alter table intake_submissions enable row level security;
 
+create table if not exists sos_alerts (
+  id uuid primary key,
+  token text,
+  language text not null default 'en',
+  history jsonb not null default '{}'::jsonb,
+  status text not null default 'open',
+  created_at timestamptz not null default now()
+);
+alter table sos_alerts enable row level security;
+
 -- ============================================================
 -- practitioners
 -- ============================================================

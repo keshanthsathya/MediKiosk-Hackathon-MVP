@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
+import { useKiosk } from '../context/KioskContext';
 
 export default function SOSButton() {
   const [showAlert, setShowAlert] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [status, setStatus] = useState('');
+  const { state } = useKiosk();
 
   useEffect(() => {
     let timer;
@@ -23,6 +26,11 @@ export default function SOSButton() {
   const handleSOSClick = () => {
     setCountdown(5);
     setShowAlert(true);
+    setStatus('Contacting hospital staff...');
+    const base = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+    fetch(`${base}/api/sos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ language: state.language, token: state.token, history: state.history }) })
+      .then((response) => setStatus(response.ok ? 'Staff notification sent.' : 'Alert shown locally.'))
+      .catch(() => setStatus('Alert shown locally; please contact staff immediately.'));
   };
 
   const handleCancel = () => {
@@ -47,7 +55,7 @@ export default function SOSButton() {
             </div>
             <h2 className="text-3xl font-bold text-[#1A1A2E] mb-4">EMERGENCY ALERT</h2>
             <p className="text-lg text-[#1A1A2E]/80 mb-8">
-              Staff has been notified. Help is on the way.
+              {status}
             </p>
             <div className="text-6xl font-bold text-[#E63946] mb-8">
               {countdown}

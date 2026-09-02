@@ -30,6 +30,15 @@ const initialState = {
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
+export const TRANSLATIONS = {
+  en: { welcome: 'Welcome to MediKiosk', selectLanguage: 'Please select your preferred language', patientIdentification: 'Patient Identification', patientConsent: 'Patient Consent', continue: 'Continue', next: 'Next', previous: 'Previous', chiefComplaint: 'Chief Complaint', mainConcern: 'What is your main health concern today?', doctorPortal: 'Doctor Portal', viewDoctor: 'View Doctor Screen' },
+  hi: { welcome: 'MediKiosk में आपका स्वागत है', selectLanguage: 'अपनी पसंदीदा भाषा चुनें', patientIdentification: 'मरीज़ की पहचान', patientConsent: 'मरीज़ की सहमति', continue: 'जारी रखें', next: 'अगला', previous: 'पिछला', chiefComplaint: 'मुख्य शिकायत', mainConcern: 'आज आपकी मुख्य स्वास्थ्य समस्या क्या है?', doctorPortal: 'डॉक्टर पोर्टल', viewDoctor: 'डॉक्टर स्क्रीन देखें' },
+  ta: { welcome: 'MediKiosk-க்கு வரவேற்கிறோம்', selectLanguage: 'உங்களுக்கு விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்', patientIdentification: 'நோயாளி அடையாளம்', patientConsent: 'நோயாளி ஒப்புதல்', continue: 'தொடரவும்', next: 'அடுத்து', previous: 'பின்செல்', chiefComplaint: 'முக்கியப் புகார்', mainConcern: 'இன்று உங்கள் முக்கிய உடல்நலக் கவலை என்ன?', doctorPortal: 'மருத்துவர் போர்டல்', viewDoctor: 'மருத்துவர் திரையைப் பார்க்கவும்' },
+  te: { welcome: 'MediKiosk కు స్వాగతం', selectLanguage: 'మీకు ఇష్టమైన భాషను ఎంచుకోండి', patientIdentification: 'రోగి గుర్తింపు', patientConsent: 'రోగి సమ్మతి', continue: 'కొనసాగించు', next: 'తదుపరి', previous: 'మునుపటి', chiefComplaint: 'ప్రధాన ఫిర్యాదు', mainConcern: 'ఈ రోజు మీ ప్రధాన ఆరోగ్య సమస్య ఏమిటి?', doctorPortal: 'డాక్టర్ పోర్టల్', viewDoctor: 'డాక్టర్ స్క్రీన్ చూడండి' },
+  kn: { welcome: 'MediKiosk ಗೆ ಸ್ವಾಗತ', selectLanguage: 'ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ', patientIdentification: 'ರೋಗಿಯ ಗುರುತು', patientConsent: 'ರೋಗಿಯ ಒಪ್ಪಿಗೆ', continue: 'ಮುಂದುವರಿಸಿ', next: 'ಮುಂದೆ', previous: 'ಹಿಂದಿನದು', chiefComplaint: 'ಮುಖ್ಯ ದೂರು', mainConcern: 'ಇಂದು ನಿಮ್ಮ ಮುಖ್ಯ ಆರೋಗ್ಯ ಸಮಸ್ಯೆ ಏನು?', doctorPortal: 'ವೈದ್ಯರ ಪೋರ್ಟಲ್', viewDoctor: 'ವೈದ್ಯರ ಪರದೆ ನೋಡಿ' },
+  bn: { welcome: 'MediKiosk-এ স্বাগতম', selectLanguage: 'আপনার পছন্দের ভাষা নির্বাচন করুন', patientIdentification: 'রোগীর পরিচয়', patientConsent: 'রোগীর সম্মতি', continue: 'চালিয়ে যান', next: 'পরবর্তী', previous: 'আগের', chiefComplaint: 'প্রধান অভিযোগ', mainConcern: 'আজ আপনার প্রধান স্বাস্থ্য সমস্যা কী?', doctorPortal: 'ডাক্তার পোর্টাল', viewDoctor: 'ডাক্তারের স্ক্রিন দেখুন' },
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_LANGUAGE':
@@ -97,6 +106,7 @@ export const KioskProvider = ({ children }) => {
         removeUpload,
         submitForm,
         resetForm,
+        t: (key) => (TRANSLATIONS[state.language || 'en'] || TRANSLATIONS.en)[key] || TRANSLATIONS.en[key] || key,
       }}
     >
       {children}

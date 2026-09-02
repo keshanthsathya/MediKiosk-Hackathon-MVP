@@ -19,7 +19,7 @@ const DURATIONS = ['Today', 'Past week', 'Past month', 'More than a month', 'Not
 
 export default function HistoryPage() {
   const navigate = useNavigate();
-  const { history, updateHistory } = useKiosk();
+  const { history, updateHistory, t } = useKiosk();
   const [currentStep, setCurrentStep] = useState(history?.step || 0);
   const [formData, setFormData] = useState({
     complaint: history?.complaint || '',
@@ -57,7 +57,7 @@ export default function HistoryPage() {
     } finally { setChatLoading(false); }
   };
 
-  const stepDef = STEPS[currentStep];
+  const stepDef = currentStep === 0 ? { ...STEPS[currentStep], title: t('chiefComplaint'), prompt: t('mainConcern') } : STEPS[currentStep];
 
   const handleNext = () => {
     updateHistory({ ...formData, step: currentStep + 1 });
@@ -271,13 +271,13 @@ export default function HistoryPage() {
           onClick={handlePrev}
           className="min-h-[60px] min-w-[200px] text-2xl font-bold bg-gray-200 text-[#1A1A2E] rounded-lg shadow-sm hover:bg-gray-300 transition-colors"
         >
-          Previous
+          {t('previous')}
         </button>
         <button
           onClick={handleNext}
           className="min-h-[60px] min-w-[200px] text-2xl font-bold bg-[#0F4C75] text-white rounded-lg shadow-md hover:bg-blue-800 transition-colors"
         >
-          {currentStep === STEPS.length - 1 ? 'Continue to Upload' : 'Next'}
+          {currentStep === STEPS.length - 1 ? 'Continue to Upload' : t('next')}
         </button>
       </div>
     </div>
